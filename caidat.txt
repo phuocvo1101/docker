@@ -1,0 +1,17 @@
+cai docker
+https://docs.docker.com/toolbox/toolbox_install_windows/
+
+--- download docker compose -----
+
+cach 1:
+sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+cach 2 ( cong ty )
+https://gitlab.seldatdirect.com/snippets/2/raw thanhf link github cua minh 
+wget https://gitlab.seldatdirect.com/snippets/2/raw -O- | tr -d '\r' > /var/lib/boot2docker/bootlocal.sh && sudo sh /var/lib/boot2docker/bootlocal.sh
+
+tao file bootlocal.sh  ( trong /var/lib/boot2docker/bootlocal.sh)
