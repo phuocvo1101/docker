@@ -1,0 +1,15 @@
+version: '2'
+services:
+  web_service:
+    image: caohoanganhuit/ubuntu16-php7.3-nginx:latest
+    container_name: web
+    volumes:
+      - /d:/d
+      - ./host:/var/www/other/vhost
+    environment:
+      - VIRTUAL_HOST=*.local.com
+    extra_hosts:
+      - "docker.local:172.17.0.1"
+      - "api.sdms.seldatdirect.local.com:172.17.0.1"
+    restart: always
+    network_mode: bridge

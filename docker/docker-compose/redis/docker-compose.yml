@@ -1,0 +1,11 @@
+version: '2'
+services:   
+  redis_service:
+    image: redis
+    container_name: redis_service
+    volumes:
+      - ./data-redis:/data
+    ports:
+      - "6379:6379"
+    restart: always
+    network_mode: bridge

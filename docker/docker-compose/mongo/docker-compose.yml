@@ -1,0 +1,10 @@
+version: '2'
+services:
+  mongo:
+    image: mongo:3
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    network_mode: bridge
+    command: "--auth"
