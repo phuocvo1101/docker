@@ -1,0 +1,22 @@
+version: '2.1'
+services:
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.3
+    container_name: elastic
+    volumes:
+      - "esdata1:/usr/share/elasticsearch/data"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "discovery.type=single-node"
+      - "transport.host=127.0.0.1"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_count", "-u", "elastic:secret"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  esdata1:
+    driver: local

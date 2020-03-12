@@ -1,0 +1,37 @@
+version: '3.2'
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+
+services:
+  cadvisor_service:
+    image: google/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - ./cadvisor_data:/cadvisor_data
+    command:
+      - '--storage_duration=5m0s'
+      - '--http_auth_file=/cadvisor_data/.htpasswd'
+    restart: always
+
+  stunnel_service:
+    build:
+      context: ./stunnel-build
+      dockerfile: Dockerfile
+    container_name: stunnel
+    volumes:
+      - ./stunnel_data:/etc/stunnel/
+    restart: always
+    ports:
+      - "8888:8888"
+    depends_on:
+      - cadvisor_service

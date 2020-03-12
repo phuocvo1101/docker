@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  pgadmin4_service:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    network_mode: bridge
+    ports:
+      - "8080:80"
+    volumes:
+      - "pgdb:/var/lib/pgadmin"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL:-admin@local.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-password}
+
+volumes:
+  pgdb:

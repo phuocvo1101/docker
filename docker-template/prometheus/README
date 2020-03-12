@@ -1,0 +1,13 @@
+# Noted IMPORTANT setup security for prometheus https://prometheus.io/docs/guides/basic-auth/
+
+# Install tool genenrate htpasswd
+apt install apache2-utils
+
+# cd prometheus_configs/tls and generate ssl
+openssl genrsa -des3 -passout pass:<password_prometheus_key> -out prometheus.key 4096
+openssl req -passin pass:<password_prometheus_key> -new -key prometheus.key -out prometheus.csr -subj "/C=VN/ST=VN/L=VN/O=Local/OU=Local/CN=prometheus.seldatdirect.com"
+openssl x509 -req -days 3650 -in prometheus.csr -CA ca.crt -CAkey ca.key -passin pass:<passout_ca_key> -set_serial 1 -out prometheus.crt 
+openssl rsa -passin pass:<password_prometheus_key> -in prometheus.key -out cadvisor_node_nopass.key
+
+# cd prometheus_configs/file_sd_configs. Copy and edit target_dk104.json.example
+target_dk104.json.example

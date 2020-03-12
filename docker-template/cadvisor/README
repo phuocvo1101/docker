@@ -1,0 +1,11 @@
+# Install tool genenrate htpasswd
+apt install apache2-utils
+
+# cd cadvisor_data and gennerate htpasswd for user admin
+htpasswd -c .htpasswd admin
+
+# cd stunnel_data/tls and generate ssl
+openssl genrsa -des3 -passout pass:<password_cadvisor_key> -out cadvisor_node.key 4096
+openssl req -passin pass:<password_cadvisor_key> -new -key cadvisor_node.key -out cadvisor_node.csr -subj "/C=VN/ST=VN/L=VN/O=Local/OU=Local/CN=<domain_server>"
+openssl x509 -req -days 3650 -in cadvisor_node.csr -CA ca.crt -CAkey ca.key -passin pass:<passout_ca_key> -set_serial 1 -out cadvisor_node.crt 
+openssl rsa -passin pass:<password_cadvisor_key> -in cadvisor_node.key -out cadvisor_node_nopass.key

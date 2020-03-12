@@ -1,0 +1,98 @@
+version: "3"
+services:
+  postgresql_kong_service:
+    image: postgres:10
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpassword}
+      POSTGRES_USER: ${POSTGRES_USER:-pgadmin}
+      POSTGRES_DB: kongdb
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    network_mode: bridge
+
+  kong-migration:
+    image: kong:1.0.3
+    links:
+      - postgresql_kong_service:pghost
+    command: "kong migrations bootstrap"
+    restart: on-failure
+    environment:
+      KONG_PG_HOST: pghost
+      KONG_PG_PASSWORD: ${POSTGRES_PASSWORD:-pgpassword}
+      KONG_PG_USER: ${POSTGRES_USER:-pgadmin}
+      KONG_PG_DATABASE: kongdb
+      KONG_DATABASE: postgres
+    depends_on:
+      - postgresql_kong_service
+    network_mode: bridge
+
+  kong:
+    image: kong:1.0.3
+    restart: always
+    links:
+      - postgresql_kong_service:pghost
+    environment:
+      KONG_PG_HOST: pghost
+      KONG_PG_DATABASE: kongdb
+      KONG_PG_PASSWORD: ${POSTGRES_PASSWORD:-pgpassword}
+      KONG_PG_USER: ${POSTGRES_USER:-pgadmin}
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_CASSANDRA_CONTACT_POINTS: kongdb
+      VIRTUAL_HOST: apigw.local
+      VIRTUAL_PORT: 8000
+#    extra_hosts:
+#      - test.local.com:172.17.0.1
+    depends_on:
+      - kong-migration
+      - postgresql_kong_service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://kong:8001"]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+    ports:
+      - "8001:8001"
+      - "8000:8000"
+    network_mode: bridge
+
+  konga-prepare:
+    image: pantsel/konga:0.14.1
+    command: "-c prepare -a postgres -u postgresql://${POSTGRES_USER:-pgadmin}:${POSTGRES_PASSWORD:-pgpassword}@pghost:5432/konga_db"
+    restart: on-failure
+
+    links:
+      - postgresql_kong_service:pghost
+    depends_on:
+      - postgresql_kong_service
+    network_mode: bridge
+
+    #######################################
+    # Konga: Kong GUI
+    #######################################
+  konga:
+    image: pantsel/konga:0.14.1
+    restart: always
+    links:
+      - postgresql_kong_service:pghost
+      - kong:kong
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: pghost
+      DB_USER: ${POSTGRES_USER:-pgadmin}
+      TOKEN_SECRET: km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
+      DB_DATABASE: konga_db
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-pgpassword}
+
+    depends_on:
+      - postgresql_kong_service
+      - konga-prepare
+    ports:
+      - "1337:1337"
+    network_mode: bridge
+
+volumes:
+  pgdata:

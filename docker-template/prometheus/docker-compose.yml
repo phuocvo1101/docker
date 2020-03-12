@@ -1,0 +1,50 @@
+version: '3.2'
+
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+
+networks:
+    prometheus-net:
+        external:
+            name: prometheus-net
+
+services:
+  prometheus_service:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus_configs/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.external-url=http://prometheus.seldatdirect.com'
+      - '--web.route-prefix=/'
+    environment:
+      - VIRTUAL_HOST=prometheus.seldatdirect.com
+      - LETSENCRYPT_HOST=prometheus.seldatdirect.com
+      - LETSENCRYPT_EMAIL=platform-team@seldatinc.com
+      - VIRTUAL_PORT=9090
+      - HTTPS_METHOD=noredirect
+    networks:
+      - prometheus-net
+    restart: always
+
+  grafana_service:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=AgfNqZdi6ZYMdsbeI@
+      - GF_SERVER_ROOT_URL=http://grafana.seldatdirect.com
+      - VIRTUAL_HOST=grafana.seldatdirect.com
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=grafana.seldatdirect.com
+      - LETSENCRYPT_EMAIL=platform-team@seldatinc.com
+      - HTTPS_METHOD=noredirect
+    depends_on:
+      - prometheus_service
+    networks:
+      - prometheus-net
+    restart: always

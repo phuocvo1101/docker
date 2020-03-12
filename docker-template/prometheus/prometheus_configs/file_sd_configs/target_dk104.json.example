@@ -1,0 +1,11 @@
+[
+  {
+    "targets": [
+      "dk104-intl.seldatdirect.com:8888"
+    ],
+    "labels": {
+      "label_server": "dk104.seldatdirect.com",
+      "label_metric": "dk104.seldatdirect.com_cadvisor"
+    }
+  }
+]

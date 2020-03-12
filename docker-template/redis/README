@@ -1,0 +1,6 @@
+1. add to /etc/rc.local
+    sysctl -w net.core.somaxconn=65535
+
+2. /etc/rc.local
+vm.overcommit_memory = 1
+
