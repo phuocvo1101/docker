@@ -136,3 +136,53 @@ Enter http://test.local.com on browser and view result
 
 ** tai lieu **
 https://hub.docker.com/u/caohoanganhuit
+
+<h3>Note DOCKER</h3>
+<p>
+Thay dôi image trong docke-compose.yml 
+docker stop web
+docker rm web
+rồi run lai docker-compose up -d 
+</p>
+===list tat ca machine docker=====
+docker-machine ls
+==stop docker machine======
+docker-machine stop default
+============khoi dong docker=======
+1 docker-machine start dev
+docker-machine ssh dev
+===== reload nginx ==========
+docker exec -it web bash
+service nginx reload
+==========================
+
+docker ps -a (liet kê tat ca các container)
+
+docker ps  ( chi liet kê các container dang ch?y background)
+5. Dung container dang chay
+
+docker stop <container_id hoac name_container>
+
+docker stop $(docker ps –a –q) (Dung tat ca các docker dang dùng)
+
+6. Khoi dong lai container dã dung
+
+docker start <container_id hoac name_container>
+
+7. Xóa container không còn su dung
+docker stop nginx-proxy
+docker rm <container_id ho?c name_container>
+
+docker rm $(docker ps -a -q)   (Xóa tat ca các docker)
+
+8. Truy cap vào 1 container dang chay
+
+docker exec -it <container_id hoac name_container> bash
+
+9. Export b?n container
+
+docker export <container_id ho?c name_container> | gzip > file_export.tar.gz
+
+10. Import container => image
+
+zcat file_export.tar.gz | docker <new_name_image>Sau khi ch?y xong. Ch?y l?nh docker images d? ki?m tra l?i trong danh sách list images.
